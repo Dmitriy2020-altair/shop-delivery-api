@@ -1,10 +1,13 @@
 import { Pool } from 'pg';
 
+import { env } from '../config/env.js';
+
 const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  database: 'shop_delivery',
-  user: 'dmytrokuzmin',
+  host: env.db.host,
+  port: env.db.port,
+  database: env.db.database,
+  user: env.db.user,
+  password: env.db.password,
 });
 
 export default pool;
