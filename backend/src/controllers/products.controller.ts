@@ -10,14 +10,7 @@ class ProductController {
   }
 
   async getProductById(req: Request, res: Response): Promise<void> {
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      res.status(400).json({ message: 'Invalid product id' });
-      return;
-    }
-
-    const product = await productService.getProductById(id);
+    const product = await productService.getProductById(res.locals.id);
 
     res.json(product);
   }
@@ -29,27 +22,13 @@ class ProductController {
   }
 
   async updateProduct(req: Request, res: Response): Promise<void> {
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      res.status(400).json({ message: 'Invalid product id' });
-      return;
-    }
-
-    const product = await productService.updateProduct(id, req.body);
+    const product = await productService.updateProduct(res.locals.id, req.body);
 
     res.json(product);
   }
 
   async deleteProduct(req: Request, res: Response): Promise<void> {
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      res.status(400).json({ message: 'Invalid product id' });
-      return;
-    }
-
-    await productService.deleteProduct(id);
+    await productService.deleteProduct(res.locals.id);
 
     res.status(204).send();
   }
