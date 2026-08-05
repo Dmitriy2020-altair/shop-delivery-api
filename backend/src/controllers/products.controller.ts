@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 
 import productService from '../services/products.service.js';
+import type { UpdateProductDto } from '../schemas/product.schema.js';
 
 class ProductController {
   async getProducts(req: Request, res: Response): Promise<void> {
@@ -22,7 +23,7 @@ class ProductController {
   }
 
   async updateProduct(req: Request, res: Response): Promise<void> {
-    const product = await productService.updateProduct(res.locals.id, req.body);
+    const product = await productService.updateProduct(res.locals.id, req.body as UpdateProductDto);
 
     res.json(product);
   }

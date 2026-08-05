@@ -1,9 +1,6 @@
 import pool from '../db/pool.js';
-import type {
-  CreateProductDto,
-  Product,
-  UpdateProductDto,
-} from '../types/product.js';
+import type { Product } from '../types/product.js';
+import type { CreateProductDto, UpdateProductDto } from '../schemas/product.schema.js';
 
 class ProductRepository {
   async getAll(): Promise<Product[]> {
@@ -34,7 +31,7 @@ class ProductRepository {
       FROM products
       WHERE id = $1
     `,
-      [id],
+      [id]
     );
 
     return result.rows[0] ?? null;
@@ -53,22 +50,24 @@ class ProductRepository {
         category,
         created_at
     `,
-      [data.name, data.price, data.quantity, data.category],
+      [data.name, data.price, data.quantity, data.category]
     );
 
     return result.rows[0];
   }
 
   async update(id: number, data: UpdateProductDto): Promise<Product | null> {
+    const fields = Object.keys(data) as (keyof UpdateProductDto)[];
+    const values = fields.map((field) => data[field]);
+    const queryValues = [...values, id];
+    const setClause = fields.map((field, index) => `${field} = $${index + 1}`).join(', ');
+
     const result = await pool.query<Product>(
       `
       UPDATE products
       SET
-        name = $1,
-        price = $2,
-        quantity = $3,
-        category = $4
-      WHERE id = $5
+        ${setClause}
+      WHERE id = $${fields.length + 1} 
       RETURNING
         id,
         name,
@@ -77,7 +76,7 @@ class ProductRepository {
         category,
         created_at
     `,
-      [data.name, data.price, data.quantity, data.category, id],
+      queryValues
     );
 
     return result.rows[0] ?? null;

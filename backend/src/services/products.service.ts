@@ -1,10 +1,8 @@
 import productRepository from '../repositories/products.repository.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
-import type {
-  CreateProductDto,
-  Product,
-  UpdateProductDto,
-} from '../types/product.js';
+import type { Product } from '../types/product.js';
+import type { CreateProductDto, UpdateProductDto } from '../schemas/product.schema.js';
+import { AppError } from '../errors/AppError.js';
 
 class ProductService {
   async getProducts(): Promise<Product[]> {
@@ -26,6 +24,9 @@ class ProductService {
   }
 
   async updateProduct(id: number, data: UpdateProductDto): Promise<Product> {
+    if (Object.keys(data).length === 0) {
+      throw new AppError('At least one field is required for update', 400);
+    }
     const product = await productRepository.update(id, data);
 
     if (!product) {
