@@ -31,6 +31,30 @@ class UserRepository {
     return result.rows[0] ?? null;
   }
 
+  async findByEmail(email: string): Promise<{
+    id: number;
+    email: string;
+    passwordHash: string;
+  } | null> {
+    const result = await pool.query<{
+      id: number;
+      email: string;
+      passwordHash: string;
+    }>(
+      `
+      SELECT
+        id,
+        email,
+        password_hash AS "passwordHash"
+      FROM users
+      WHERE email = $1
+      `,
+      [email]
+    );
+
+    return result.rows[0] ?? null;
+  }
+
   async create(email: string, passwordHash: string): Promise<User | null> {
     const result = await pool.query<User>(
       `
