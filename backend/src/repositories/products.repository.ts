@@ -1,6 +1,8 @@
 import pool from '../db/pool.js';
 import type { Product } from '../types/product.js';
 import type { CreateProductDto, UpdateProductDto } from '../schemas/product.schema.js';
+import type { DB } from '../types/db.js';
+import { OrderItemDto } from '../schemas/order.schema.js';
 
 class ProductRepository {
   async getAll(): Promise<Product[]> {
@@ -35,6 +37,25 @@ class ProductRepository {
     );
 
     return result.rows[0] ?? null;
+  }
+
+  async getByIds(db: DB, ids: number[]): Promise<Product[]> {
+    const result = await db.query<Product>(
+      `
+      SELECT
+        id,
+        name,
+        price,
+        quantity,
+        category,
+        created_at
+      FROM products
+      WHERE id = ANY($1)
+      `,
+      [ids]
+    );
+
+    return result.rows;
   }
 
   async create(data: CreateProductDto): Promise<Product> {
@@ -80,6 +101,33 @@ class ProductRepository {
     );
 
     return result.rows[0] ?? null;
+  }
+
+  async decreaseQuantities(db: DB, items: OrderItemDto[]): Promise<void> {
+    const COLUMNS_PER_ROW = 2;
+
+    const placeholders = items
+      .map((_, index) => {
+        const offset = index * COLUMNS_PER_ROW;
+
+        return `($${offset + 1}, $${offset + 2})`;
+      })
+      .join(', ');
+
+    const values = items.flatMap((item) => [item.productId, item.quantity]);
+
+    await db.query(
+      `
+        UPDATE products AS p
+        SET quantity = p.quantity - v.quantity::integer
+        FROM (
+          VALUES
+            ${placeholders}
+        ) AS v(product_id, quantity)
+        WHERE p.id = v.product_id::integer;
+      `,
+      values
+    );
   }
 
   async delete(id: number): Promise<boolean> {
