@@ -1,6 +1,6 @@
 import pool from '../db/pool.js';
 import type { User } from '../types/user.js';
-import type { CreateUserDto, UpdateUserDto } from '../schemas/user.schema.js';
+import type { UpdateUserDto } from '../schemas/user.schema.js';
 
 class UserRepository {
   async getAll(): Promise<User[]> {
@@ -31,25 +31,20 @@ class UserRepository {
     return result.rows[0] ?? null;
   }
 
-  async create(data: CreateUserDto): Promise<User | null> {
-    const fields = Object.keys(data) as (keyof CreateUserDto)[];
-    const values = fields.map((field) => data[field]);
-    const columns = fields.join(', ');
-    const placeholders =
-    fields
-        .map((_, index) => `$${index + 1}`)
-        .join(', ');
-
+  async create(email: string, passwordHash: string): Promise<User | null> {
     const result = await pool.query<User>(
       `
-      INSERT INTO users (${columns})
-      VALUES (${placeholders})
+      INSERT INTO users (
+        email,
+        password_hash
+      )
+      VALUES ($1, $2)
       RETURNING
         id,
         email,
         created_at
-    `,
-      values
+      `,
+      [email, passwordHash]
     );
 
     return result.rows[0] ?? null;
