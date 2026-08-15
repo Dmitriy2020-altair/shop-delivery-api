@@ -30,6 +30,3 @@ Thumbs.db
 !.vscode/settings.json
 *.swp
 *.swo
-
-# Cursor
-.cursor/

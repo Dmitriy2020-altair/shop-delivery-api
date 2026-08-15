@@ -2,7 +2,7 @@ import userRepository from '../repositories/users.repository.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
 import { AppError } from '../errors/AppError.js';
 import { User } from '../types/user.js';
-import { CreateUserDto, UpdateUserDto } from '../schemas/user.schema.js';
+import { UpdateUserDto } from '../schemas/user.schema.js';
 
 class UserService {
   async getUsers(): Promise<User[]> {
@@ -17,10 +17,6 @@ class UserService {
     }
 
     return user;
-  }
-
-  async createUser(data: CreateUserDto): Promise<User | null> {
-    return userRepository.create(data);
   }
 
   async updateUser(id: number, data: UpdateUserDto): Promise<User> {

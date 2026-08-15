@@ -34,3 +34,13 @@ CREATE TABLE order_items (
   FOREIGN KEY (product_id) REFERENCES products (id),
   UNIQUE (order_id, product_id)
 );
+
+CREATE TABLE refresh_tokens (
+  id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL,
+  family_id UUID NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  revoked_at TIMESTAMP NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW ()
+);

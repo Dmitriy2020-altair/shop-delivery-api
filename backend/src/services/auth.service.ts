@@ -4,6 +4,8 @@ import usersRepository from '../repositories/users.repository.js';
 import type { LoginDto, RegisterDto } from '../schemas/auth.schema.js';
 import { AppError } from '../errors/AppError.js';
 import { generateAccessToken } from '../utils/jwt.js';
+import refreshTokenService from './refresh-token.service.js';
+
 class AuthService {
   async register(data: RegisterDto) {
     const passwordHash = await bcrypt.hash(data.password, 12);
@@ -28,11 +30,13 @@ class AuthService {
       throw new AppError('Invalid email or password', 401);
     }
     const accessToken = generateAccessToken(user.id);
+    const refreshToken = await refreshTokenService.create(user.id);
 
     return {
       id: user.id,
       email: user.email,
       accessToken,
+      refreshToken,
     };
   }
 }

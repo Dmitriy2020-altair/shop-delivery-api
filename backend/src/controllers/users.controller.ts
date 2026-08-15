@@ -16,6 +16,19 @@ class UserController {
     res.json(user);
   }
 
+  async getMe(req: Request, res: Response): Promise<void> {
+    const user = await usersService.getUserById(req.user!.id);
+
+    console.log('USER:', user);
+
+    res.status(200).json({
+      id: user.id,
+      email: user.email,
+      role: req.user!.role,
+      created_at: user.created_at,
+    });
+  }
+
   async updateUser(req: Request, res: Response): Promise<void> {
     const user = await usersService.updateUser(res.locals.id, req.body as UpdateUserDto);
 
