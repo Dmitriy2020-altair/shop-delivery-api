@@ -5,6 +5,21 @@ pnpm workspace monorepo.
 - `apps/backend` — Express + TypeScript API (`http://localhost:3000`)
 - `apps/frontend` — Next.js App Router client (`http://localhost:3001`)
 
+## API
+
+Business endpoints are versioned under `/api/v1`:
+
+- `GET /health` — health check (not versioned)
+- `/api/v1/auth/...`
+- `/api/v1/users/...`
+- `/api/v1/products/...`
+- `/api/v1/orders/...`
+
+OpenAPI:
+
+- Swagger UI: `GET /api-docs`
+- Spec: `GET /openapi.json`
+
 ## Local development
 
 ```bash

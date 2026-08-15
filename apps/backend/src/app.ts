@@ -29,10 +29,10 @@ app.get('/openapi.json', (_req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/health', healthRouter);
-app.use('/products', productsRouter);
-app.use('/orders', ordersRouter);
-app.use('/auth', authRoutes);
-app.use('/users', usersRoutes);
+app.use('/api/v1/products', productsRouter);
+app.use('/api/v1/orders', ordersRouter);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', usersRoutes);
 
 app.use(errorHandler);
 
