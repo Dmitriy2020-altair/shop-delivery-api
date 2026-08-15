@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+.pnpm-store/
 
 # Build
 dist/
@@ -15,6 +16,11 @@ build/
 logs/
 *.log
 npm-debug.log*
+pnpm-debug.log*
+
+# Lockfiles (npm — use pnpm-lock.yaml)
+package-lock.json
+**/package-lock.json
 
 # Test / coverage
 coverage/

@@ -1,0 +1,29 @@
+import { Router } from 'express';
+import { getHealth } from '../controllers/health.controller.js';
+
+const router = Router();
+
+/**
+ * @openapi
+ * /health:
+ *   get:
+ *     summary: Health check
+ *     tags:
+ *       - Health
+ *     responses:
+ *       200:
+ *         description: API is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - status
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ */
+router.get('/', getHealth);
+
+export default router;

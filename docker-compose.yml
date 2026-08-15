@@ -13,7 +13,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
     container_name: shop-delivery-api
     depends_on:
       - postgres
@@ -26,9 +28,13 @@ services:
       DB_NAME: shop_delivery
       DB_USER: postgres
       DB_PASSWORD: postgres
+      FRONTEND_URL: http://localhost:3001
+      JWT_ACCESS_SECRET: docker-dev-access-secret
+      JWT_REFRESH_SECRET: docker-dev-refresh-secret
     volumes:
-      - ./backend:/app
+      - ./apps/backend:/app/apps/backend
       - /app/node_modules
+      - /app/apps/backend/node_modules
 
 volumes:
   postgres_data:

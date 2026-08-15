@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
 
 import { env } from './config/env.js';
+import { swaggerSpec } from './config/swagger.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import healthRouter from './routes/health.routes.js';
 import productsRouter from './routes/products.routes.js';
@@ -20,6 +22,11 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
+app.get('/openapi.json', (_req, res) => {
+  res.json(swaggerSpec);
+});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use('/health', healthRouter);
 app.use('/products', productsRouter);
