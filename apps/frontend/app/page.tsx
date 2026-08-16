@@ -1,67 +1,98 @@
 import Link from "next/link";
+import {
+  ArrowRight,
+  Package,
+  ShoppingBag,
+  User,
+} from "lucide-react";
 import { CheckApiButton } from "@/components/CheckApiButton";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+const features = [
+  {
+    href: "/products",
+    title: "Products",
+    description: "Browse the catalog, filter by category, and prepare carts.",
+    icon: Package,
+  },
+  {
+    href: "/orders",
+    title: "Orders",
+    description: "Track deliveries, review status, and manage fulfillment.",
+    icon: ShoppingBag,
+  },
+  {
+    href: "/profile",
+    title: "Profile",
+    description: "View account details, role, and security preferences.",
+    icon: User,
+  },
+] as const;
 
 export default function HomePage() {
   return (
-    <div className="space-y-8">
-      <section className="space-y-3">
-        <p className="text-sm uppercase tracking-wide text-muted">
-          shop-delivery-api
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          Shop Delivery
-        </h1>
-        <p className="max-w-2xl text-base leading-relaxed text-muted">
-          A full-stack shop and delivery demo. Browse products, place orders,
-          and manage your profile through the Next.js client talking to the
-          Express API.
-        </p>
+    <div className="space-y-12">
+      <section className="space-y-6">
+        <div className="space-y-3">
+          <p className="text-xs font-semibold tracking-[0.18em] text-primary uppercase">
+            Shop Delivery
+          </p>
+          <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            Operate your shop and deliveries from one clean dashboard.
+          </h1>
+          <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
+            A modern UI for browsing products, reviewing orders, and managing
+            your account — ready to connect to the Express API.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/products"
+            className={cn(buttonVariants({ size: "lg" }), "gap-1.5")}
+          >
+            Browse products
+            <ArrowRight className="size-4" aria-hidden />
+          </Link>
+          <Link
+            href="/register"
+            className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
+          >
+            Create account
+          </Link>
+        </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {[
-          {
-            href: "/products",
-            title: "Products",
-            text: "Browse the catalog.",
-          },
-          {
-            href: "/orders",
-            title: "Orders",
-            text: "Review your deliveries.",
-          },
-          {
-            href: "/profile",
-            title: "Profile",
-            text: "Account details and role.",
-          },
-          {
-            href: "/login",
-            title: "Login",
-            text: "Sign in to your account.",
-          },
-          {
-            href: "/register",
-            title: "Register",
-            text: "Create a new account.",
-          },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="rounded-lg border border-border bg-white p-4 transition-colors hover:border-ink/20"
-          >
-            <h2 className="font-medium">{item.title}</h2>
-            <p className="mt-1 text-sm text-muted">{item.text}</p>
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {features.map((feature) => (
+          <Link key={feature.href} href={feature.href} className="group">
+            <Card className="h-full transition-shadow hover:shadow-md">
+              <CardHeader>
+                <div className="mb-2 flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <feature.icon className="size-4" aria-hidden />
+                </div>
+                <CardTitle className="flex items-center gap-2">
+                  {feature.title}
+                  <ArrowRight
+                    className="size-3.5 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100"
+                    aria-hidden
+                  />
+                </CardTitle>
+                <CardDescription>{feature.description}</CardDescription>
+              </CardHeader>
+            </Card>
           </Link>
         ))}
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-medium">API connectivity</h2>
-        <p className="text-sm text-muted">
-          Quick check against <code>GET /health</code> on the Express backend.
-        </p>
+      <section>
         <CheckApiButton />
       </section>
     </div>

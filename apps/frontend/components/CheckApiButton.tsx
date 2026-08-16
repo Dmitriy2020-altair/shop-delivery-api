@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
-
-type HealthResponse = {
-  status: string;
-};
+import { AlertCircle, CheckCircle2, LoaderCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import type { HealthResponse } from "@/lib/api/types";
 
 export function CheckApiButton() {
   const [loading, setLoading] = useState(false);
@@ -35,30 +42,44 @@ export function CheckApiButton() {
   }
 
   return (
-    <div className="space-y-3 rounded-lg border border-border bg-white p-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={checkApi}
-          disabled={loading}
-          className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {loading ? "Checking..." : "Check API"}
-        </button>
-        {loading && <p className="text-sm text-muted">Loading...</p>}
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>API connectivity</CardTitle>
+        <CardDescription>
+          Quick check against <code className="text-xs">GET /health</code> on
+          the Express backend.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Button type="button" onClick={checkApi} disabled={loading}>
+          {loading ? (
+            <>
+              <LoaderCircle className="size-4 animate-spin" aria-hidden />
+              Checking...
+            </>
+          ) : (
+            "Check API"
+          )}
+        </Button>
 
-      {error && (
-        <p className="text-sm text-danger" role="alert">
-          Error: {error}
-        </p>
-      )}
+        {result ? (
+          <Alert className="border-emerald-200 bg-emerald-50 text-emerald-900">
+            <CheckCircle2 className="size-4 text-emerald-600" />
+            <AlertTitle>API is online</AlertTitle>
+            <AlertDescription>
+              Health status: {result.status}
+            </AlertDescription>
+          </Alert>
+        ) : null}
 
-      {result && (
-        <pre className="overflow-x-auto rounded-md bg-surface p-3 text-sm">
-          {JSON.stringify(result, null, 2)}
-        </pre>
-      )}
-    </div>
+        {error ? (
+          <Alert variant="destructive">
+            <AlertCircle className="size-4" />
+            <AlertTitle>Unable to connect to API</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }

@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { RegisterForm } from "@/components/RegisterForm";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Register",
@@ -8,24 +14,18 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="mx-auto max-w-md space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Register</h1>
-        <p className="text-sm text-muted">
-          Create an account. Submit logic will connect to Express later.
-        </p>
-      </div>
-
-      <div className="rounded-lg border border-border bg-white p-5">
-        <RegisterForm />
-      </div>
-
-      <p className="text-sm text-muted">
-        Already registered?{" "}
-        <Link href="/login" className="font-medium text-accent hover:underline">
-          Login
-        </Link>
-      </p>
+    <div className="mx-auto flex w-full max-w-md flex-col justify-center py-4 sm:py-10">
+      <Card>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-xl">Create your account</CardTitle>
+          <CardDescription>
+            Get started with Shop Delivery in a few seconds.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RegisterForm />
+        </CardContent>
+      </Card>
     </div>
   );
 }

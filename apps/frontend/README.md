@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend
 
-## Getting Started
+Next.js App Router client for Shop Delivery (`http://localhost:3001`).
 
-First, run the development server:
+## OpenAPI → TypeScript types
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+The frontend consumes the backend OpenAPI contract as generated TypeScript types.
+
+```text
+Backend OpenAPI (swagger-jsdoc)
+        ↓
+apps/backend/openapi.json   (export)
+        ↓
+openapi-typescript
+        ↓
+apps/frontend/lib/api/generated.ts
+        ↓
+UI / API modules (typed contract only for now)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Generate types
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+From the repo root:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm --filter frontend api:generate
+# or
+pnpm api:generate
+```
 
-## Learn More
+What this does:
 
-To learn more about Next.js, take a look at the following resources:
+1. Exports the same schema served at `GET /openapi.json` via `pnpm --filter backend openapi:export`
+2. Runs `openapi-typescript` into `lib/api/generated.ts`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+If the backend is already running, you can also generate directly from the live schema:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm --filter frontend api:generate:url
+# optional:
+OPENAPI_URL=http://localhost:3000/openapi.json pnpm --filter frontend api:generate:url
+```
 
-## Deploy on Vercel
+### Using generated types
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Prefer aliases in `lib/api/types.ts` (or import from `generated.ts` directly):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```ts
+import type { HealthResponse } from "@/lib/api/types";
+
+const data = (await response.json()) as HealthResponse;
+```
+
+Do not hand-write response types that already exist in the OpenAPI schema.
+
+API method wrappers are not generated yet — only the typed contract.

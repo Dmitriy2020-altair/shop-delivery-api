@@ -10,7 +10,8 @@
     "build:frontend": "pnpm --filter frontend build",
     "start": "pnpm --filter backend start",
     "start:backend": "pnpm --filter backend start",
-    "start:frontend": "pnpm --filter frontend start"
+    "start:frontend": "pnpm --filter frontend start",
+    "api:generate": "pnpm --filter frontend api:generate"
   },
   "engines": {
     "node": ">=22"

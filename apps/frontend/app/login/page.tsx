@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { LoginForm } from "@/components/LoginForm";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -8,24 +14,18 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="mx-auto max-w-md space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Login</h1>
-        <p className="text-sm text-muted">
-          Sign in with your account. Submit logic will connect to Express later.
-        </p>
-      </div>
-
-      <div className="rounded-lg border border-border bg-white p-5">
-        <LoginForm />
-      </div>
-
-      <p className="text-sm text-muted">
-        No account yet?{" "}
-        <Link href="/register" className="font-medium text-accent hover:underline">
-          Register
-        </Link>
-      </p>
+    <div className="mx-auto flex w-full max-w-md flex-col justify-center py-4 sm:py-10">
+      <Card>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-xl">Welcome back</CardTitle>
+          <CardDescription>
+            Sign in to manage products, orders, and your profile.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LoginForm />
+        </CardContent>
+      </Card>
     </div>
   );
 }

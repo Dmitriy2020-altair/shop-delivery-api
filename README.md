@@ -20,6 +20,25 @@ OpenAPI:
 - Swagger UI: `GET /api-docs`
 - Spec: `GET /openapi.json`
 
+### OpenAPI → frontend types
+
+```text
+Backend OpenAPI schema
+  → apps/backend/openapi.json
+  → openapi-typescript
+  → apps/frontend/lib/api/generated.ts
+```
+
+Regenerate frontend types after OpenAPI changes:
+
+```bash
+pnpm api:generate
+# or
+pnpm --filter frontend api:generate
+```
+
+See [`apps/frontend/README.md`](apps/frontend/README.md) for details.
+
 ## Local development
 
 ```bash
