@@ -11,7 +11,470 @@
       "description": "Local development"
     }
   ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Service health"
+    },
+    {
+      "name": "Auth",
+      "description": "Authentication and session cookies"
+    },
+    {
+      "name": "Users",
+      "description": "User management"
+    },
+    {
+      "name": "Products",
+      "description": "Product catalog"
+    },
+    {
+      "name": "Orders",
+      "description": "Order creation"
+    }
+  ],
   "paths": {
+    "/api/v1/users": {
+      "get": {
+        "summary": "List all users",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Users list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/users/me": {
+      "get": {
+        "summary": "Get the authenticated user profile",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserMe"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "summary": "Get a user by id",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a user by id",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id, empty body, or validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorMessage"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user by id",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "summary": "List products",
+        "tags": [
+          "Products"
+        ],
+        "responses": {
+          "200": {
+            "description": "Product list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a product",
+        "tags": [
+          "Products"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/products/{id}": {
+      "get": {
+        "summary": "Get a product by id",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a product by id",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id, empty body, or validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ErrorMessage"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a product by id",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product deleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "post": {
+        "summary": "Create an order",
+        "description": "Creates an order with line items in a DB transaction. The authenticated user id is not taken from the request body yet (service currently uses a hardcoded user id).\n",
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed, duplicate products, or insufficient stock",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ValidationError"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ErrorMessage"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health check",
@@ -24,16 +487,651 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "status"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "string",
-                      "example": "ok"
-                    }
-                  }
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "Sign in and set HttpOnly auth cookies",
+        "description": "On success, accessToken and refreshToken are set as HttpOnly cookies. Token values are not included in the JSON body.\n",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signed in; Set-Cookie headers include accessToken and refreshToken",
+            "headers": {
+              "Set-Cookie": {
+                "description": "HttpOnly cookies for accessToken and refreshToken",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "summary": "Log out and clear auth cookies",
+        "description": "Revokes the refresh token from the refreshToken cookie when present, then clears cookies.",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out; auth cookies cleared",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Logged out"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "summary": "Rotate refresh token and issue a new access token",
+        "description": "Reads refreshToken from an HttpOnly cookie, rotates it (with reuse detection), and sets new accessToken and refreshToken cookies. Token values are not in the JSON body.\n",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Tokens refreshed; Set-Cookie headers updated",
+            "headers": {
+              "Set-Cookie": {
+                "description": "HttpOnly cookies for accessToken and refreshToken",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                },
+                "example": {
+                  "message": "Token refreshed"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/RefreshUnauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/test-cookie": {
+      "get": {
+        "summary": "Debug endpoint — verify accessToken cookie authentication",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Access token cookie is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 5
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-16T20:15:00.000Z"
+          }
+        }
+      },
+      "UserMe": {
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "role",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 5
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "example": "user"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-16T20:15:00.000Z"
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "new@example.com"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "price",
+          "quantity",
+          "category",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "iPhone 16"
+          },
+          "price": {
+            "type": "number",
+            "example": 999
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 15
+          },
+          "category": {
+            "type": "string",
+            "example": "Phones"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-16T20:15:00.000Z"
+          }
+        }
+      },
+      "CreateProductRequest": {
+        "type": "object",
+        "required": [
+          "name",
+          "price",
+          "quantity",
+          "category"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "iPhone 16"
+          },
+          "price": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "example": 999
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 15
+          },
+          "category": {
+            "type": "string",
+            "example": "Phones"
+          }
+        }
+      },
+      "UpdateProductRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "iPhone 16"
+          },
+          "price": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "example": 999
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 15
+          },
+          "category": {
+            "type": "string",
+            "example": "Phones"
+          }
+        }
+      },
+      "OrderItemInput": {
+        "type": "object",
+        "required": [
+          "productId",
+          "quantity"
+        ],
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 1
+          },
+          "quantity": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "example": 2
+          }
+        }
+      },
+      "CreateOrderRequest": {
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/OrderItemInput"
+            }
+          }
+        }
+      },
+      "CreateOrderResponse": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 10
+          }
+        }
+      },
+      "ErrorMessage": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Internal server error"
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "required": [
+          "message",
+          "errors"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Validation failed"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": {
+              "email": [
+                "Invalid email address"
+              ],
+              "password": [
+                "Password must be at least 8 characters long"
+              ]
+            }
+          }
+        }
+      },
+      "HealthStatus": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ok"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "password123"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "example": "password123"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "email"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 5
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "john@example.com"
+          }
+        }
+      },
+      "MessageResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Logged out"
+          }
+        }
+      },
+      "AuthUser": {
+        "type": "object",
+        "required": [
+          "id",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 5
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "example": "user"
+          }
+        }
+      },
+      "AuthenticatedResponse": {
+        "type": "object",
+        "required": [
+          "message",
+          "user"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Authenticated"
+          },
+          "user": {
+            "$ref": "#/components/schemas/AuthUser"
+          }
+        }
+      }
+    },
+    "responses": {
+      "ValidationError": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Authentication required or invalid credentials/token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorMessage"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Authenticated but not allowed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorMessage"
+            },
+            "example": {
+              "message": "Forbidden"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorMessage"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorMessage"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorMessage"
+            },
+            "example": {
+              "message": "Internal server error"
+            }
+          }
+        }
+      },
+      "RefreshUnauthorized": {
+        "description": "Missing, invalid, expired, or reused refresh token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorMessage"
+            },
+            "examples": {
+              "missing": {
+                "value": {
+                  "message": "Refresh token required"
+                }
+              },
+              "invalid": {
+                "value": {
+                  "message": "Invalid refresh token"
+                }
+              },
+              "reuse": {
+                "value": {
+                  "message": "Refresh token reuse detected"
+                }
+              },
+              "expired": {
+                "value": {
+                  "message": "Refresh token expired"
                 }
               }
             }
@@ -41,7 +1139,5 @@
         }
       }
     }
-  },
-  "components": {},
-  "tags": []
+  }
 }

@@ -4,6 +4,403 @@
  */
 
 export interface paths {
+    "/api/v1/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all users */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Users list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["User"][];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                403: components["responses"]["Forbidden"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the authenticated user profile */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Current user */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserMe"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a user by id */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["User"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete a user by id */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description User deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                400: components["responses"]["BadRequest"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update a user by id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateUserRequest"];
+                };
+            };
+            responses: {
+                /** @description User updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["User"];
+                    };
+                };
+                /** @description Invalid id, empty body, or validation failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorMessage"] | components["schemas"]["ValidationError"];
+                    };
+                };
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List products */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product list */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Product"][];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        /** Create a product */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateProductRequest"];
+                };
+            };
+            responses: {
+                /** @description Product created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Product"];
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a product by id */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product found */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Product"];
+                    };
+                };
+                400: components["responses"]["BadRequest"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete a product by id */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Product deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                400: components["responses"]["BadRequest"];
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Update a product by id */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateProductRequest"];
+                };
+            };
+            responses: {
+                /** @description Product updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Product"];
+                    };
+                };
+                /** @description Invalid id, empty body, or validation failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorMessage"] | components["schemas"]["ValidationError"];
+                    };
+                };
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create an order
+         * @description Creates an order with line items in a DB transaction. The authenticated user id is not taken from the request body yet (service currently uses a hardcoded user id).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateOrderRequest"];
+                };
+            };
+            responses: {
+                /** @description Order created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CreateOrderResponse"];
+                    };
+                };
+                /** @description Validation failed, duplicate products, or insufficient stock */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationError"] | components["schemas"]["ErrorMessage"];
+                    };
+                };
+                404: components["responses"]["NotFound"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -27,12 +424,231 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            /** @example ok */
-                            status: string;
-                        };
+                        "application/json": components["schemas"]["HealthStatus"];
                     };
                 };
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register a new user */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RegisterRequest"];
+                };
+            };
+            responses: {
+                /** @description User successfully registered */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["User"];
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign in and set HttpOnly auth cookies
+         * @description On success, accessToken and refreshToken are set as HttpOnly cookies. Token values are not included in the JSON body.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LoginRequest"];
+                };
+            };
+            responses: {
+                /** @description Signed in; Set-Cookie headers include accessToken and refreshToken */
+                200: {
+                    headers: {
+                        /** @description HttpOnly cookies for accessToken and refreshToken */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["LoginResponse"];
+                    };
+                };
+                400: components["responses"]["ValidationError"];
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Log out and clear auth cookies
+         * @description Revokes the refresh token from the refreshToken cookie when present, then clears cookies.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Logged out; auth cookies cleared */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "message": "Logged out"
+                         *     }
+                         */
+                        "application/json": components["schemas"]["MessageResponse"];
+                    };
+                };
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rotate refresh token and issue a new access token
+         * @description Reads refreshToken from an HttpOnly cookie, rotates it (with reuse detection), and sets new accessToken and refreshToken cookies. Token values are not in the JSON body.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Tokens refreshed; Set-Cookie headers updated */
+                200: {
+                    headers: {
+                        /** @description HttpOnly cookies for accessToken and refreshToken */
+                        "Set-Cookie"?: string;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        /**
+                         * @example {
+                         *       "message": "Token refreshed"
+                         *     }
+                         */
+                        "application/json": components["schemas"]["MessageResponse"];
+                    };
+                };
+                401: components["responses"]["RefreshUnauthorized"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/test-cookie": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Debug endpoint — verify accessToken cookie authentication */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Access token cookie is valid */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuthenticatedResponse"];
+                    };
+                };
+                401: components["responses"]["Unauthorized"];
+                500: components["responses"]["InternalServerError"];
             };
         };
         put?: never;
@@ -46,8 +662,243 @@ export interface paths {
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: never;
-    responses: never;
+    schemas: {
+        User: {
+            /** @example 5 */
+            id: number;
+            /**
+             * Format: email
+             * @example john@example.com
+             */
+            email: string;
+            /**
+             * Format: date-time
+             * @example 2026-08-16T20:15:00.000Z
+             */
+            created_at: string;
+        };
+        UserMe: {
+            /** @example 5 */
+            id: number;
+            /**
+             * Format: email
+             * @example john@example.com
+             */
+            email: string;
+            /**
+             * @example user
+             * @enum {string}
+             */
+            role: "user" | "admin";
+            /**
+             * Format: date-time
+             * @example 2026-08-16T20:15:00.000Z
+             */
+            created_at: string;
+        };
+        UpdateUserRequest: {
+            /**
+             * Format: email
+             * @example new@example.com
+             */
+            email?: string;
+        };
+        Product: {
+            /** @example 1 */
+            id: number;
+            /** @example iPhone 16 */
+            name: string;
+            /** @example 999 */
+            price: number;
+            /** @example 15 */
+            quantity: number;
+            /** @example Phones */
+            category: string;
+            /**
+             * Format: date-time
+             * @example 2026-08-16T20:15:00.000Z
+             */
+            created_at: string;
+        };
+        CreateProductRequest: {
+            /** @example iPhone 16 */
+            name: string;
+            /** @example 999 */
+            price: number;
+            /** @example 15 */
+            quantity: number;
+            /** @example Phones */
+            category: string;
+        };
+        UpdateProductRequest: {
+            /** @example iPhone 16 */
+            name?: string;
+            /** @example 999 */
+            price?: number;
+            /** @example 15 */
+            quantity?: number;
+            /** @example Phones */
+            category?: string;
+        };
+        OrderItemInput: {
+            /** @example 1 */
+            productId: number;
+            /** @example 2 */
+            quantity: number;
+        };
+        CreateOrderRequest: {
+            items: components["schemas"]["OrderItemInput"][];
+        };
+        CreateOrderResponse: {
+            /** @example 10 */
+            id: number;
+        };
+        ErrorMessage: {
+            /** @example Internal server error */
+            message: string;
+        };
+        ValidationError: {
+            /** @example Validation failed */
+            message: string;
+            /**
+             * @example {
+             *       "email": [
+             *         "Invalid email address"
+             *       ],
+             *       "password": [
+             *         "Password must be at least 8 characters long"
+             *       ]
+             *     }
+             */
+            errors: {
+                [key: string]: string[];
+            };
+        };
+        HealthStatus: {
+            /** @example ok */
+            status: string;
+        };
+        RegisterRequest: {
+            /**
+             * Format: email
+             * @example john@example.com
+             */
+            email: string;
+            /** @example password123 */
+            password: string;
+        };
+        LoginRequest: {
+            /**
+             * Format: email
+             * @example john@example.com
+             */
+            email: string;
+            /** @example password123 */
+            password: string;
+        };
+        LoginResponse: {
+            /** @example 5 */
+            id: number;
+            /**
+             * Format: email
+             * @example john@example.com
+             */
+            email: string;
+        };
+        MessageResponse: {
+            /** @example Logged out */
+            message: string;
+        };
+        AuthUser: {
+            /** @example 5 */
+            id: number;
+            /**
+             * @example user
+             * @enum {string}
+             */
+            role: "user" | "admin";
+        };
+        AuthenticatedResponse: {
+            /** @example Authenticated */
+            message: string;
+            user: components["schemas"]["AuthUser"];
+        };
+    };
+    responses: {
+        /** @description Validation failed */
+        ValidationError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ValidationError"];
+            };
+        };
+        /** @description Authentication required or invalid credentials/token */
+        Unauthorized: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorMessage"];
+            };
+        };
+        /** @description Authenticated but not allowed */
+        Forbidden: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "message": "Forbidden"
+                 *     }
+                 */
+                "application/json": components["schemas"]["ErrorMessage"];
+            };
+        };
+        /** @description Resource not found */
+        NotFound: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorMessage"];
+            };
+        };
+        /** @description Bad request */
+        BadRequest: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorMessage"];
+            };
+        };
+        /** @description Internal server error */
+        InternalServerError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "message": "Internal server error"
+                 *     }
+                 */
+                "application/json": components["schemas"]["ErrorMessage"];
+            };
+        };
+        /** @description Missing, invalid, expired, or reused refresh token */
+        RefreshUnauthorized: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["ErrorMessage"];
+            };
+        };
+    };
     parameters: never;
     requestBodies: never;
     headers: never;

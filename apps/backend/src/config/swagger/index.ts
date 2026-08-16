@@ -18,8 +18,19 @@ const options: swaggerJsdoc.Options = {
         description: 'Local development',
       },
     ],
+    tags: [
+      { name: 'Health', description: 'Service health' },
+      { name: 'Auth', description: 'Authentication and session cookies' },
+      { name: 'Users', description: 'User management' },
+      { name: 'Products', description: 'Product catalog' },
+      { name: 'Orders', description: 'Order creation' },
+    ],
   },
-  apis: [path.join(__dirname, '../routes/**/*.{ts,js}')],
+  apis: [
+    path.join(__dirname, './schemas/**/*.{ts,js}'),
+    path.join(__dirname, './responses/**/*.{ts,js}'),
+    path.join(__dirname, '../../routes/**/*.{ts,js}'),
+  ],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);

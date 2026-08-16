@@ -11,18 +11,14 @@ const router = Router();
  *     tags:
  *       - Health
  *     responses:
- *       200:
+ *       '200':
  *         description: API is healthy
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               required:
- *                 - status
- *               properties:
- *                 status:
- *                   type: string
- *                   example: ok
+ *               $ref: '#/components/schemas/HealthStatus'
+ *       '500':
+ *         $ref: '#/components/responses/InternalServerError'
  */
 router.get('/', getHealth);
 
