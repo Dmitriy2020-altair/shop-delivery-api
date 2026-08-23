@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ShoppingCart } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ShoppingCart } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,8 +10,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import type { MockProduct } from "@/lib/mock/products";
+} from '@/components/ui/card';
+import type { MockProduct } from '@/lib/mock/products';
 
 type ProductCardProps = {
   product: MockProduct;
@@ -33,17 +33,13 @@ export function ProductCard({ product }: ProductCardProps) {
         </CardHeader>
         <CardContent className="mt-auto flex items-end justify-between gap-3">
           <div>
-            <p className="text-lg font-semibold tracking-tight">
-              ${product.price.toFixed(2)}
-            </p>
+            <p className="text-lg font-semibold tracking-tight">${product.price.toFixed(2)}</p>
             <p className="text-xs text-muted-foreground">
-              {product.available
-                ? `${product.quantity} in stock`
-                : "Out of stock"}
+              {product.available ? `${product.quantity} in stock` : 'Out of stock'}
             </p>
           </div>
-          <Badge variant={product.available ? "outline" : "destructive"}>
-            {product.available ? "Available" : "Unavailable"}
+          <Badge variant={product.available ? 'outline' : 'destructive'}>
+            {product.available ? 'Available' : 'Unavailable'}
           </Badge>
         </CardContent>
       </div>

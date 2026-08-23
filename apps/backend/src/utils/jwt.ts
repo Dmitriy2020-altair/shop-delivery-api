@@ -8,7 +8,7 @@ export function generateAccessToken(userId: number): string {
     },
     env.jwt.accessSecret,
     {
-      expiresIn: '15m',
-    }
+      expiresIn: '10s',
+    } 
   );
 }

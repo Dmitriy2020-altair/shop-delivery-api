@@ -1,96 +1,71 @@
-"use client";
+'use client';
 
-import { useState, type FormEvent } from "react";
-import Link from "next/link";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Eye,
-  EyeOff,
-  LoaderCircle,
-} from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-type FieldErrors = {
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-};
+import { useState } from 'react';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertCircle, CheckCircle2, Eye, EyeOff, LoaderCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { registerSchema, type RegisterFormValues } from '@/lib/validations/auth';
+import { authApi } from '@/lib/api/auth';
 
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  async function onSubmit(values: RegisterFormValues) {
     setApiError(null);
     setSuccess(false);
 
-    const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "").trim();
-    const password = String(formData.get("password") ?? "");
-    const confirmPassword = String(formData.get("confirmPassword") ?? "");
+    try {
+      const response = await authApi.register({
+        email: values.email,
+        password: values.password,
+      });
 
-    const nextErrors: FieldErrors = {};
-    if (!email) {
-      nextErrors.email = "Email is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      nextErrors.email = "Enter a valid email address.";
-    }
-    if (!password) {
-      nextErrors.password = "Password is required.";
-    } else if (password.length < 8) {
-      nextErrors.password = "Password must be at least 8 characters.";
-    }
-    if (!confirmPassword) {
-      nextErrors.confirmPassword = "Confirm your password.";
-    } else if (password !== confirmPassword) {
-      nextErrors.confirmPassword = "Passwords do not match.";
-    }
-
-    setFieldErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) {
-      return;
-    }
-
-    setSubmitting(true);
-    window.setTimeout(() => {
-      setSubmitting(false);
-
-      // UI-only simulated API failure — replace with real auth later.
-      if (email.toLowerCase() === "fail@example.com") {
-        setApiError("An account with this email already exists.");
-        return;
-      }
+      console.log('REGISTER RESPONSE:', response);
 
       setSuccess(true);
-    }, 700);
+    } catch (error) {
+      console.error('REGISTER ERROR:', error);
+      setApiError('Registration failed. Please try again.');
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
-          name="email"
           type="email"
           autoComplete="email"
           placeholder="you@example.com"
-          required
-          disabled={submitting}
-          aria-invalid={Boolean(fieldErrors.email)}
+          disabled={isSubmitting}
+          aria-invalid={Boolean(errors.email)}
+          {...register('email')}
         />
-        {fieldErrors.email ? (
+        {errors.email ? (
           <p className="text-xs text-destructive" role="alert">
-            {fieldErrors.email}
+            {errors.email.message}
           </p>
         ) : (
           <p className="text-xs text-muted-foreground">
@@ -104,13 +79,12 @@ export function RegisterForm() {
         <div className="relative">
           <Input
             id="password"
-            name="password"
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
-            required
-            disabled={submitting}
+            disabled={isSubmitting}
             className="pr-10"
-            aria-invalid={Boolean(fieldErrors.password)}
+            aria-invalid={Boolean(errors.password)}
+            {...register('password')}
           />
           <Button
             type="button"
@@ -118,15 +92,15 @@ export function RegisterForm() {
             size="icon-sm"
             className="absolute top-1/2 right-1 -translate-y-1/2"
             onClick={() => setShowPassword((value) => !value)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            disabled={submitting}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            disabled={isSubmitting}
           >
             {showPassword ? <EyeOff /> : <Eye />}
           </Button>
         </div>
-        {fieldErrors.password ? (
+        {errors.password ? (
           <p className="text-xs text-destructive" role="alert">
-            {fieldErrors.password}
+            {errors.password.message}
           </p>
         ) : (
           <p className="text-xs text-muted-foreground">
@@ -140,13 +114,12 @@ export function RegisterForm() {
         <div className="relative">
           <Input
             id="confirmPassword"
-            name="confirmPassword"
-            type={showConfirm ? "text" : "password"}
+            type={showConfirm ? 'text' : 'password'}
             autoComplete="new-password"
-            required
-            disabled={submitting}
+            disabled={isSubmitting}
             className="pr-10"
-            aria-invalid={Boolean(fieldErrors.confirmPassword)}
+            aria-invalid={Boolean(errors.confirmPassword)}
+            {...register('confirmPassword')}
           />
           <Button
             type="button"
@@ -154,17 +127,15 @@ export function RegisterForm() {
             size="icon-sm"
             className="absolute top-1/2 right-1 -translate-y-1/2"
             onClick={() => setShowConfirm((value) => !value)}
-            aria-label={
-              showConfirm ? "Hide confirm password" : "Show confirm password"
-            }
-            disabled={submitting}
+            aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
+            disabled={isSubmitting}
           >
             {showConfirm ? <EyeOff /> : <Eye />}
           </Button>
         </div>
-        {fieldErrors.confirmPassword ? (
+        {errors.confirmPassword ? (
           <p className="text-xs text-destructive" role="alert">
-            {fieldErrors.confirmPassword}
+            {errors.confirmPassword.message}
           </p>
         ) : null}
       </div>
@@ -187,19 +158,19 @@ export function RegisterForm() {
         </Alert>
       ) : null}
 
-      <Button type="submit" className="w-full" disabled={submitting} size="lg">
-        {submitting ? (
+      <Button type="submit" className="w-full" disabled={isSubmitting} size="lg">
+        {isSubmitting ? (
           <>
             <LoaderCircle className="size-4 animate-spin" aria-hidden />
             Creating account...
           </>
         ) : (
-          "Create account"
+          'Create account'
         )}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
+        Already have an account?{' '}
         <Link href="/login" className="font-medium text-primary hover:underline">
           Sign in
         </Link>

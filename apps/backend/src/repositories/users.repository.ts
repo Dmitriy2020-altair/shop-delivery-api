@@ -73,22 +73,43 @@ class UserRepository {
   }
 
   async create(email: string, passwordHash: string): Promise<User | null> {
-    const result = await pool.query<User>(
-      `
-      INSERT INTO users (
-        email,
-        password_hash
-      )
-      VALUES ($1, $2)
-      RETURNING
-        id,
-        email,
-        created_at
-      `,
-      [email, passwordHash]
-    );
+    // const result = await pool.query<User>(
+    //   `
+    //   INSERT INTO users (
+    //     email,
+    //     password_hash
+    //   )
+    //   VALUES ($1, $2)
+    //   RETURNING
+    //     id,
+    //     email,
+    //     created_at
+    //   `,
+    //   [email, passwordHash]
+    // );
 
-    return result.rows[0] ?? null;
+    // return result.rows[0] ?? null;
+    try {
+      const result = await pool.query<User>(
+        `
+        INSERT INTO users (
+          email,
+          password_hash
+        )
+        VALUES ($1, $2)
+        RETURNING
+          id,
+          email,
+          created_at
+        `,
+        [email, passwordHash]
+      );
+
+      return result.rows[0] ?? null;
+    } catch (error) {
+      console.error('DB ERROR:', error);
+      throw error;
+    }
   }
 
   async update(id: number, data: UpdateUserDto): Promise<User | null> {

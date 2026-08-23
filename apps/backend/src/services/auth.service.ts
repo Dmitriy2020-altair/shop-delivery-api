@@ -5,14 +5,23 @@ import type { LoginDto, RegisterDto } from '../schemas/auth.schema.js';
 import { AppError } from '../errors/AppError.js';
 import { generateAccessToken } from '../utils/jwt.js';
 import refreshTokenService from './refresh-token.service.js';
+import { isPostgresError } from '../utils/postgres.js';
 
 class AuthService {
   async register(data: RegisterDto) {
     const passwordHash = await bcrypt.hash(data.password, 12);
 
-    const user = await usersRepository.create(data.email, passwordHash);
+    try {
+      const user = await usersRepository.create(data.email, passwordHash);
 
-    return user;
+      return user;
+    } catch (error) {
+      if (isPostgresError(error) && error.code === '23505') {
+        throw new AppError('An account with this email already exists.', 409);
+      }
+
+      throw error;
+    }
   }
 
   async login(data: LoginDto) {
