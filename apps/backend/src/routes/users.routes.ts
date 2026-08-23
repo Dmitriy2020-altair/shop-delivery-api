@@ -81,6 +81,10 @@ router.get('/me', authMiddleware, usersController.getMe);
  *               $ref: '#/components/schemas/User'
  *       '400':
  *         $ref: '#/components/responses/BadRequest'
+ *       '401':
+ *         $ref: '#/components/responses/Unauthorized'
+ *       '403':
+ *         $ref: '#/components/responses/Forbidden'
  *       '404':
  *         $ref: '#/components/responses/NotFound'
  *       '500':
@@ -117,6 +121,10 @@ router.get('/me', authMiddleware, usersController.getMe);
  *               oneOf:
  *                 - $ref: '#/components/schemas/ErrorMessage'
  *                 - $ref: '#/components/schemas/ValidationError'
+ *       '401':
+ *         $ref: '#/components/responses/Unauthorized'
+ *       '403':
+ *         $ref: '#/components/responses/Forbidden'
  *       '404':
  *         $ref: '#/components/responses/NotFound'
  *       '500':
@@ -137,13 +145,29 @@ router.get('/me', authMiddleware, usersController.getMe);
  *         description: User deleted
  *       '400':
  *         $ref: '#/components/responses/BadRequest'
+ *       '401':
+ *         $ref: '#/components/responses/Unauthorized'
+ *       '403':
+ *         $ref: '#/components/responses/Forbidden'
  *       '404':
  *         $ref: '#/components/responses/NotFound'
  *       '500':
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/:id', validateId, usersController.getUserById);
-router.patch('/:id', validateId, validateBody(UpdateUserSchema), usersController.updateUser);
-router.delete('/:id', validateId, usersController.deleteUser);
+router.get('/:id', authMiddleware, validateId, usersController.getUserById);
+router.patch(
+  '/:id',
+  authMiddleware,
+  validateId,
+  validateBody(UpdateUserSchema),
+  usersController.updateUser,
+);
+router.delete(
+  '/:id',
+  authMiddleware,
+  requireRole(UserRole.ADMIN),
+  validateId,
+  usersController.deleteUser,
+);
 
 export default router;

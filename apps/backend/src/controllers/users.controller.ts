@@ -11,13 +11,13 @@ class UserController {
   }
 
   async getUserById(req: Request, res: Response): Promise<void> {
-    const user = await usersService.getUserById(res.locals.id);
+    const user = await usersService.getUserById(res.locals.id, req.user!);
 
     res.json(user);
   }
 
   async getMe(req: Request, res: Response): Promise<void> {
-    const user = await usersService.getUserById(req.user!.id);
+    const user = await usersService.getUserById(req.user!.id, req.user!);
 
     console.log('USER:', user);
 
@@ -30,7 +30,11 @@ class UserController {
   }
 
   async updateUser(req: Request, res: Response): Promise<void> {
-    const user = await usersService.updateUser(res.locals.id, req.body as UpdateUserDto);
+    const user = await usersService.updateUser(
+      res.locals.id,
+      req.body as UpdateUserDto,
+      req.user!,
+    );
 
     res.status(200).json(user);
   }
