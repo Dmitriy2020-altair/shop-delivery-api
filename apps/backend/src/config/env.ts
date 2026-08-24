@@ -13,6 +13,7 @@ function required(name: string): string {
 export const env = {
   port: Number(process.env.PORT) || 3000,
   frontendUrl: required('FRONTEND_URL'),
+  databaseUrl: required('DATABASE_URL'),
   db: {
     host: required('DB_HOST'),
     port: Number(process.env.DB_PORT) || 5432,

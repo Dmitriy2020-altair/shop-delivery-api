@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Build
+dist/
+build/
+*.tsbuildinfo
+
+# Prisma — generated client (recreate with `prisma generate`)
+/src/generated/prisma
+
+# Prisma Agent Skills (AI docs for Claude/Cursor/Windsurf — not app code)
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo
