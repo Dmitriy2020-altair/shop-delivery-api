@@ -1,144 +1,106 @@
-import pool from '../db/pool.js';
-import type { User } from '../types/user.js';
+import type { User, UserWithPassword } from '../types/user.js';
 import type { UpdateUserDto } from '../schemas/user.schema.js';
+import prisma from '../db/prisma.js';
 
 class UserRepository {
   async getAll(): Promise<User[]> {
-    const result = await pool.query<User>(`
-      SELECT 
-        id,
-        email,
-        created_at
-      FROM users
-    `);
-
-    return result.rows;
+    return prisma.users.findMany({
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        created_at: true,
+      },
+    });
   }
 
   async getById(id: number): Promise<User | null> {
-    const result = await pool.query<User>(
-      `
-      SELECT 
+    return prisma.users.findUnique({
+      where: {
         id,
-        email,
-        created_at
-      FROM users
-      WHERE id=$1
-    `,
-      [id]
-    );
-
-    return result.rows[0] ?? null;
+      },
+      select: {
+        id: true,
+        email: true,
+        created_at: true,
+        role: true,
+      },
+    });
   }
 
   async getAuthUserById(id: number): Promise<User | null> {
-    const result = await pool.query<User>(
-      `
-        SELECT
-          id,
-          email,
-          role,
-          created_at
-        FROM users
-        WHERE id = $1
-      `,
-      [id]
-    );
-
-    return result.rows[0] ?? null;
+    return prisma.users.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        created_at: true,
+      },
+    });
   }
 
-  async findByEmail(email: string): Promise<{
-    id: number;
-    email: string;
-    passwordHash: string;
-  } | null> {
-    const result = await pool.query<{
-      id: number;
-      email: string;
-      passwordHash: string;
-    }>(
-      `
-      SELECT
-        id,
+  async findByEmail(email: string): Promise<UserWithPassword | null> {
+    const user = await prisma.users.findUnique({
+      where: {
         email,
-        password_hash AS "passwordHash"
-      FROM users
-      WHERE email = $1
-      `,
-      [email]
-    );
+      },
+      select: {
+        id: true,
+        email: true,
+        password_hash: true,
+        role: true,
+      },
+    });
 
-    return result.rows[0] ?? null;
+    if (!user) return null;
+
+    return {
+      id: user.id,
+      email: user.email,
+      passwordHash: user.password_hash,
+      role: user.role,
+    };
   }
 
   async create(email: string, passwordHash: string): Promise<User | null> {
-    // const result = await pool.query<User>(
-    //   `
-    //   INSERT INTO users (
-    //     email,
-    //     password_hash
-    //   )
-    //   VALUES ($1, $2)
-    //   RETURNING
-    //     id,
-    //     email,
-    //     created_at
-    //   `,
-    //   [email, passwordHash]
-    // );
-
-    // return result.rows[0] ?? null;
-    try {
-      const result = await pool.query<User>(
-        `
-        INSERT INTO users (
-          email,
-          password_hash
-        )
-        VALUES ($1, $2)
-        RETURNING
-          id,
-          email,
-          created_at
-        `,
-        [email, passwordHash]
-      );
-
-      return result.rows[0] ?? null;
-    } catch (error) {
-      console.error('DB ERROR:', error);
-      throw error;
-    }
-  }
-
-  async update(id: number, data: UpdateUserDto): Promise<User | null> {
-    const fields = Object.keys(data) as (keyof UpdateUserDto)[];
-    const values = fields.map((field) => data[field]);
-    const setClause = fields.map((field, index) => `${field} = $${index + 1}`).join(', ');
-    const queryValues = [...values, id];
-
-    const result = await pool.query<User>(
-      `
-      UPDATE users 
-      SET
-        ${setClause}
-      WHERE id = $${fields.length + 1}
-      RETURNING
-        id,
+    return prisma.users.create({
+      data: {
         email,
-        created_at
-    `,
-      queryValues
-    );
-
-    return result.rows[0] ?? null;
+        password_hash: passwordHash,
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        created_at: true,
+      },
+    });
   }
 
-  async delete(id: number): Promise<boolean> {
-    const result = await pool.query(`DELETE FROM users WHERE id = $1`, [id]);
+  async update(id: number, data: UpdateUserDto): Promise<User> {
+    return prisma.users.update({
+      where: {
+        id,
+      },
+      data,
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        created_at: true,
+      },
+    });
+  }
 
-    return (result.rowCount ?? 0) > 0;
+  async delete(id: number): Promise<void> {
+    await prisma.users.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
 

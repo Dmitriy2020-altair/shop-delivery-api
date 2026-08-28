@@ -55,6 +55,16 @@ From the project root:
 
 ```bash
 docker compose up --build
+
+#to start the containers 
+#cd /Users/dmytrokuzmin/Documents/shop-delivery-api
+docker compose up -d postgres
+
+#to check if the containers are running
+docker compose ps
+
+# to stop the containers
+docker compose down
 ```
 
 - API: http://localhost:3000

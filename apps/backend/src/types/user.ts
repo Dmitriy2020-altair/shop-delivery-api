@@ -1,7 +1,4 @@
-export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { UserRole } from "../generated/prisma/client.js";
 
 export interface User {
   id: number;

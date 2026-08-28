@@ -1,7 +1,8 @@
 import userRepository from '../repositories/users.repository.js';
 import { NotFoundError } from '../errors/NotFoundError.js';
 import { AppError } from '../errors/AppError.js';
-import { User, UserRole } from '../types/user.js';
+import { User } from '../types/user.js';
+import { UserRole } from '../generated/prisma/client.js';
 import { UpdateUserDto } from '../schemas/user.schema.js';
 
 type AuthActor = {
@@ -11,7 +12,7 @@ type AuthActor = {
 
 class UserService {
   private assertCanAccessUser(actor: AuthActor, targetId: number): void {
-    if (actor.role === UserRole.ADMIN) {
+    if (actor.role === UserRole.admin) {
       return;
     }
 
@@ -55,12 +56,7 @@ class UserService {
   }
 
   async deleteUser(id: number): Promise<void> {
-    const deleted = await userRepository.delete(id);
-
-    if (!deleted) {
-      throw new NotFoundError('User not found');
-    }
-  }
-}
+    await userRepository.delete(id);
+  }}
 
 export default new UserService();

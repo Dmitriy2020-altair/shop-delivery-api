@@ -1,6 +1,6 @@
 export const authConfig = {
   accessToken: {
-    expiresIn: '10s',
+    expiresIn: '15m',
     cookieName: 'accessToken',
   },
 };

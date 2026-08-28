@@ -6,7 +6,7 @@ import usersController from '../controllers/users.controller.js';
 import { UpdateUserSchema } from '../schemas/user.schema.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { requireRole } from '../middlewares/requireRole.js';
-import { UserRole } from '../types/user.js';
+import { UserRole } from '../generated/prisma/client.js';
 
 const router = Router();
 
@@ -33,7 +33,7 @@ const router = Router();
  *       '500':
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.get('/', authMiddleware, requireRole(UserRole.ADMIN), usersController.getUsers);
+router.get('/', authMiddleware, requireRole(UserRole.admin), usersController.getUsers);
 
 /**
  * @openapi
@@ -165,7 +165,7 @@ router.patch(
 router.delete(
   '/:id',
   authMiddleware,
-  requireRole(UserRole.ADMIN),
+  requireRole(UserRole.admin),
   validateId,
   usersController.deleteUser,
 );

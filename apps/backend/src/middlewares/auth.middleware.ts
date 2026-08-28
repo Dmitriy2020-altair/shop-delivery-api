@@ -2,7 +2,6 @@ import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 import userRepository from '../repositories/users.repository.js';
-import { UserRole } from '../types/user.js';
 
 export async function authMiddleware(
   req: Request,
