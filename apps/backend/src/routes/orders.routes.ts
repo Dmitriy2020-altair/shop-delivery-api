@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { validateBody } from '../middlewares/validateBody.js';
 import { CreateOrderSchema } from '../schemas/order.schema.js';
 import orderController from '../controllers/orders.controller.js';
+import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -43,6 +44,6 @@ const router = Router();
  *       '500':
  *         $ref: '#/components/responses/InternalServerError'
  */
-router.post('/', validateBody(CreateOrderSchema), orderController.createOrder);
+router.post('/', authMiddleware, validateBody(CreateOrderSchema), orderController.createOrder);
 
 export default router;

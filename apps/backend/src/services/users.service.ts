@@ -4,11 +4,7 @@ import { AppError } from '../errors/AppError.js';
 import { User } from '../types/user.js';
 import { UserRole } from '../generated/prisma/client.js';
 import { UpdateUserDto } from '../schemas/user.schema.js';
-
-type AuthActor = {
-  id: number;
-  role: UserRole;
-};
+import { AuthActor } from '../types/auth.js';
 
 class UserService {
   private assertCanAccessUser(actor: AuthActor, targetId: number): void {

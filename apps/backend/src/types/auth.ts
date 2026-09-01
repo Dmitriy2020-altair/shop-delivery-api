@@ -1,3 +1,5 @@
+import { UserRole } from "../generated/prisma/enums.js";
+
 export interface RefreshToken {
   id: number;
   userId: number;
@@ -7,3 +9,8 @@ export interface RefreshToken {
   revokedAt: Date | null;
   createdAt: Date;
 }
+
+export type AuthActor = {
+  id: number;
+  role: UserRole;
+};

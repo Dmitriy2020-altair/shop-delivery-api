@@ -1,3 +1,3 @@
-import type { Pool, PoolClient } from 'pg';
+import type { Prisma } from '../generated/prisma/client.js';
 
-export type DB = Pool | PoolClient;
+export type PrismaTransaction = Prisma.TransactionClient;

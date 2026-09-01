@@ -1,17 +1,15 @@
-import { DB } from '../types/db.js';
+import type { PrismaTransaction } from '../types/db.js';
 
 class OrdersRepository {
-  async create(db: DB, userId: number): Promise<{ id: number }> {
-    const result = await db.query<{ id: number }>(
-      `
-      INSERT INTO orders (user_id)
-      VALUES ($1)
-      RETURNING id
-      `,
-      [userId]
-    );
-
-    return result.rows[0];
+  async create(tx: PrismaTransaction, userId: number): Promise<{ id: number }> {
+    return tx.orders.create({
+      data: {
+        user_id: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
   }
 }
 
