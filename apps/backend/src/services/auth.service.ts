@@ -4,8 +4,8 @@ import usersRepository from '../repositories/users.repository.js';
 import type { LoginDto, RegisterDto } from '../schemas/auth.schema.js';
 import { AppError } from '../errors/AppError.js';
 import { generateAccessToken } from '../utils/jwt.js';
+import { Prisma } from '../generated/prisma/client.js';
 import refreshTokenService from './refresh-token.service.js';
-import { isPostgresError } from '../utils/postgres.js';
 
 class AuthService {
   async register(data: RegisterDto) {
@@ -16,7 +16,10 @@ class AuthService {
 
       return user;
     } catch (error) {
-      if (isPostgresError(error) && error.code === '23505') {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
         throw new AppError('An account with this email already exists.', 409);
       }
 

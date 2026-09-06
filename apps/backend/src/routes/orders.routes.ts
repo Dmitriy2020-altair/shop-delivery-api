@@ -14,8 +14,7 @@ const router = Router();
  *     summary: Create an order
  *     description: >
  *       Creates an order with line items in a DB transaction.
- *       The authenticated user id is not taken from the request body yet
- *       (service currently uses a hardcoded user id).
+ *       The order is owned by the authenticated user (JWT cookie).
  *     tags:
  *       - Orders
  *     requestBody:

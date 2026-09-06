@@ -1,11 +1,11 @@
-import pool from './pool.js';
+import prisma from './prisma.js';
 
 export async function checkConnection(): Promise<void> {
   try {
-    const result = await pool.query('SELECT NOW()');
+    const result = await prisma.$queryRaw<[{ now: Date }]>`SELECT NOW() as now`;
 
     console.log('✅ PostgreSQL connected');
-    console.log(result.rows[0]);
+    console.log(result[0]);
   } catch (error) {
     console.error('❌ Failed to connect to PostgreSQL');
     console.error(error);

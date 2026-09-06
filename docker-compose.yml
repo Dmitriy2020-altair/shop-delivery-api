@@ -23,18 +23,10 @@ services:
       - '3000:3000'
     environment:
       PORT: 3000
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: shop_delivery
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/shop_delivery
       FRONTEND_URL: http://localhost:3001
       JWT_ACCESS_SECRET: docker-dev-access-secret
       JWT_REFRESH_SECRET: docker-dev-refresh-secret
-    volumes:
-      - ./apps/backend:/app/apps/backend
-      - /app/node_modules
-      - /app/apps/backend/node_modules
 
 volumes:
   postgres_data:

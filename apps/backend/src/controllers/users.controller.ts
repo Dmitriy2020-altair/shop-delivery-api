@@ -19,8 +19,6 @@ class UserController {
   async getMe(req: Request, res: Response): Promise<void> {
     const user = await usersService.getUserById(req.user!.id, req.user!);
 
-    console.log('USER:', user);
-
     res.status(200).json({
       id: user.id,
       email: user.email,

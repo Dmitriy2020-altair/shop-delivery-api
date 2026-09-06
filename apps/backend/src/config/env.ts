@@ -14,13 +14,6 @@ export const env = {
   port: Number(process.env.PORT) || 3000,
   frontendUrl: required('FRONTEND_URL'),
   databaseUrl: required('DATABASE_URL'),
-  db: {
-    host: required('DB_HOST'),
-    port: Number(process.env.DB_PORT) || 5432,
-    database: required('DB_NAME'),
-    user: required('DB_USER'),
-    password: process.env.DB_PASSWORD ?? '',
-  },
   jwt: {
     accessSecret: required('JWT_ACCESS_SECRET'),
   

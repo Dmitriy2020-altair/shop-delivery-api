@@ -144,8 +144,6 @@ router.post('/refresh', authController.refresh);
  *         $ref: '#/components/responses/InternalServerError'
  */
 router.get('/test-cookie', authMiddleware, (req, res) => {
-  console.log('AUTH USER:', req.user);
-
   res.json({
     message: 'Authenticated',
     user: req.user,

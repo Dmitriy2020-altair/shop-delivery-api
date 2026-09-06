@@ -31,8 +31,6 @@ class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,// 7 days
     });
 
-    console.log(res.getHeader('Set-Cookie'));
-
     res.status(200).json({
       id: user.id,
       email: user.email,
