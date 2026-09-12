@@ -18,6 +18,26 @@ ENV DATABASE_URL=postgresql://postgres:postgres@postgres:5432/shop_delivery
 
 RUN pnpm run build
 
+
+FROM node:22-alpine AS migrator
+
+WORKDIR /app
+
+RUN corepack enable
+
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/backend/package.json ./apps/backend/
+
+RUN pnpm install --frozen-lockfile --filter backend...
+
+COPY --from=builder /app/apps/backend/prisma ./apps/backend/prisma
+COPY --from=builder /app/apps/backend/prisma.config.ts ./apps/backend/prisma.config.ts
+
+WORKDIR /app/apps/backend
+
+CMD ["pnpm", "run", "prisma:migrate:deploy"]
+
+
 FROM node:22-alpine AS runner
 
 WORKDIR /app

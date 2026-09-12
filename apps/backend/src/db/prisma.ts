@@ -1,10 +1,10 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client.js';
-import { env } from '../config/env.js';
+import { createDatabasePool } from './database.js';
 
-const adapter = new PrismaPg({
-  connectionString: env.databaseUrl,
-});
+const pool = createDatabasePool();
+
+const adapter = new PrismaPg(pool);
 
 const prisma = new PrismaClient({
   adapter,
