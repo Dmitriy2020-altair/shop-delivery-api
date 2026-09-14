@@ -15,6 +15,9 @@ env:
   ECR_REGISTRY: 853255354222.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: shop-delivery-api
   IAM_ROLE_ARN: arn:aws:iam::853255354222:role/ShopDeliveryGitHubActionsECRPushPolicy
+  # Placeholder for `prisma generate` only (prisma.config.ts requires DATABASE_URL).
+  # Does not connect to a real database during CI quality gates.
+  DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/shop_delivery
 
 jobs:
   build-and-push:

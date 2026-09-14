@@ -7,7 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "pnpm run prisma:generate && tsc",
     "start": "node dist/server.js",
-    "test": "vitest run",
+    "test": "pnpm run prisma:generate && vitest run",
     "typecheck": "pnpm run prisma:generate && tsc --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
