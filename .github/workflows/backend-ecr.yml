@@ -1,3 +1,4 @@
+```yaml
 name: Backend ECR
 
 on:
@@ -16,8 +17,8 @@ env:
   ECR_REPOSITORY: shop-delivery-api
   IAM_ROLE_ARN: arn:aws:iam::853255354222:role/ShopDeliveryGitHubActionsECRPushPolicy
 
-  # Placeholder for prisma generate only (prisma.config.ts requires DATABASE_URL).
-  # Does not connect to a real database during CI quality gates.
+  # Placeholder for prisma.config.ts.
+  # Used only during CI quality gates; does not connect to a real database.
   DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/shop_delivery
 
 jobs:
@@ -49,91 +50,11 @@ jobs:
       - name: Backend TypeScript check
         run: pnpm --filter backend typecheck
 
-      # TEMPORARY: decode OIDC claims only (never log the raw token).
-      # Remove after AWS trust policy is fully verified.
-      - name: Diagnose GitHub OIDC claims
-        run: |
-          set -euo pipefail
-
-          OIDC_RESPONSE="$(curl -sS \
-            -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com")"
-
-          OIDC_JWT="$(printf '%s' "$OIDC_RESPONSE" | jq -r '.value')"
-
-          if [ -z "$OIDC_JWT" ] || [ "$OIDC_JWT" = "null" ]; then
-            echo "Failed to obtain OIDC token from GitHub Actions"
-            exit 1
-          fi
-
-          # Decode JWT payload (middle segment) without printing the token.
-          PAYLOAD_B64="$(printf '%s' "$OIDC_JWT" | cut -d '.' -f 2)"
-          PAD_LEN=$(( (4 - ${#PAYLOAD_B64} % 4) % 4 ))
-          PAYLOAD_B64_PADDED="${PAYLOAD_B64}$(printf '=%.0s' $(seq 1 "$PAD_LEN"))"
-
-          PAYLOAD_JSON="$(
-            printf '%s' "$PAYLOAD_B64_PADDED" |
-            tr '_-' '/+' |
-            base64 -d 2>/dev/null
-          )"
-
-          unset OIDC_JWT OIDC_RESPONSE
-
-          echo "OIDC claims (selected):"
-
-          printf '%s' "$PAYLOAD_JSON" | jq '{
-            iss,
-            aud,
-            sub,
-            repository,
-            repository_id,
-            repository_owner,
-            repository_owner_id,
-            ref,
-            event_name
-          }'
-
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.IAM_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-
-      # TEMPORARY: verify GitHub Actions -> AWS Systems Manager -> EC2.
-      # Remove after successful test.
-      - name: Test SSM connection
-        run: |
-          set -euo pipefail
-
-          INSTANCE_ID="i-0d9e52818e2f4d9a3"
-
-          COMMAND_ID="$(
-            aws ssm send-command \
-              --region "$AWS_REGION" \
-              --document-name "AWS-RunShellScript" \
-              --instance-ids "$INSTANCE_ID" \
-              --parameters 'commands=["echo Hello from GitHub Actions via SSM","hostname","docker --version"]' \
-              --query "Command.CommandId" \
-              --output text
-          )"
-
-          echo "SSM Command ID: $COMMAND_ID"
-
-          aws ssm wait command-executed \
-            --region "$AWS_REGION" \
-            --command-id "$COMMAND_ID" \
-            --instance-id "$INSTANCE_ID"
-
-          aws ssm get-command-invocation \
-            --region "$AWS_REGION" \
-            --command-id "$COMMAND_ID" \
-            --instance-id "$INSTANCE_ID" \
-            --query '{
-              Status: Status,
-              Output: StandardOutputContent,
-              Error: StandardErrorContent
-            }' \
-            --output json
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -147,10 +68,8 @@ jobs:
         with:
           context: .
           file: apps/backend/Dockerfile
-
-          # Final Dockerfile stage is `runner` (production).
           push: true
-
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+```
