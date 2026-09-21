@@ -27,6 +27,7 @@ build-and-push:
 name: Backend CI and ECR push
 runs-on: ubuntu-latest
 
+```
 steps:
   - name: Checkout repository
     uses: actions/checkout@v4
@@ -84,3 +85,4 @@ steps:
       tags: |
         ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
         ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+```
