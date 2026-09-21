@@ -1,88 +1,84 @@
 name: Backend ECR
 
 on:
-push:
-branches:
-- develop
-workflow_dispatch:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
 
 permissions:
-id-token: write
-contents: read
+  id-token: write
+  contents: read
 
 env:
-AWS_REGION: us-east-1
-ECR_REGISTRY: 853255354222.dkr.ecr.us-east-1.amazonaws.com
-ECR_REPOSITORY: shop-delivery-api
-IAM_ROLE_ARN: arn:aws:iam::853255354222:role/ShopDeliveryGitHubActionsECRPushPolicy
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 853255354222.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: shop-delivery-api
+  IAM_ROLE_ARN: arn:aws:iam::853255354222:role/ShopDeliveryGitHubActionsECRPushPolicy
 
-# Placeholder for prisma.config.ts.
-
-# Used only during CI quality gates; does not connect to a real database.
-
-DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/shop_delivery
+  # Placeholder for prisma.config.ts.
+  # Used only during CI quality gates; does not connect to a real database.
+  DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/shop_delivery
 
 jobs:
-build-and-push:
-name: Backend CI and ECR push
-runs-on: ubuntu-latest
+  build-and-push:
+    name: Backend CI and ECR push
+    runs-on: ubuntu-latest
 
-```
-steps:
-  - name: Checkout repository
-    uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  - name: Setup pnpm
-    uses: pnpm/action-setup@v4
-    with:
-      version: 10.11.0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
 
-  - name: Setup Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: 22
-      cache: pnpm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
 
-  - name: Install dependencies
-    run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-  - name: Backend unit tests
-    run: pnpm --filter backend test
+      - name: Backend unit tests
+        run: pnpm --filter backend test
 
-  - name: Backend TypeScript check
-    run: pnpm --filter backend typecheck
+      - name: Backend TypeScript check
+        run: pnpm --filter backend typecheck
 
-  - name: Configure AWS credentials (OIDC)
-    uses: aws-actions/configure-aws-credentials@v4
-    with:
-      role-to-assume: ${{ env.IAM_ROLE_ARN }}
-      aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.IAM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
 
-  - name: Login to Amazon ECR
-    id: login-ecr
-    uses: aws-actions/amazon-ecr-login@v2
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-  - name: Set up Docker Buildx
-    uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-  - name: Build and push migrator image
-    uses: docker/build-push-action@v6
-    with:
-      context: .
-      file: apps/backend/Dockerfile
-      target: migrator
-      push: true
-      tags: |
-        ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:migrator-${{ github.sha }}
+      - name: Build and push migrator image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/backend/Dockerfile
+          target: migrator
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:migrator-${{ github.sha }}
 
-  - name: Build and push runner image
-    uses: docker/build-push-action@v6
-    with:
-      context: .
-      file: apps/backend/Dockerfile
-      target: runner
-      push: true
-      tags: |
-        ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
-        ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-```
+      - name: Build and push runner image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/backend/Dockerfile
+          target: runner
+          push: true
+          tags: |
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
