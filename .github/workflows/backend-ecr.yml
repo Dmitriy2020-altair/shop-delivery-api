@@ -82,3 +82,12 @@ jobs:
           tags: |
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+      - name: Deploy to EC2 via AWS Systems Manager
+        run: |
+          aws ssm send-command \
+            --region "${{ env.AWS_REGION }}" \
+            --instance-ids "i-0d9e52818e2f4d9a3" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy shop-delivery-api ${{ github.sha }}" \
+            --parameters 'commands=["~/shop-delivery-deploy/deploy.sh ${{ github.sha }}"]'
