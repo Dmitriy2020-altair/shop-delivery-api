@@ -15,7 +15,6 @@ env:
   ECR_REGISTRY: 853255354222.dkr.ecr.us-east-1.amazonaws.com
   ECR_REPOSITORY: shop-delivery-api
   IAM_ROLE_ARN: arn:aws:iam::853255354222:role/ShopDeliveryGitHubActionsECRPushPolicy
-
   # Placeholder for prisma.config.ts.
   # Used only during CI quality gates; does not connect to a real database.
   DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/shop_delivery
@@ -84,10 +83,86 @@ jobs:
             ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
       - name: Deploy to EC2 via AWS Systems Manager
+        shell: bash
         run: |
-          aws ssm send-command \
+          COMMAND_ID=$(aws ssm send-command \
             --region "${{ env.AWS_REGION }}" \
             --instance-ids "i-0d9e52818e2f4d9a3" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploy shop-delivery-api ${{ github.sha }}" \
-            --parameters 'commands=["/home/ec2-user/shop-delivery-deploy/deploy.sh ${{ github.sha }}"]'
+            --parameters 'commands=["/home/ec2-user/shop-delivery-deploy/deploy.sh ${{ github.sha }}"]' \
+            --query "Command.CommandId" \
+            --output text)
+
+          echo "SSM Command ID: ${COMMAND_ID}"
+
+          echo "Waiting for deployment to complete..."
+
+          for attempt in {1..60}; do
+            STATUS=$(aws ssm get-command-invocation \
+              --region "${{ env.AWS_REGION }}" \
+              --command-id "${COMMAND_ID}" \
+              --instance-id "i-0d9e52818e2f4d9a3" \
+              --query "Status" \
+              --output text)
+
+            echo "Deployment status (${attempt}/60): ${STATUS}"
+
+            case "${STATUS}" in
+              Success)
+                echo "Deployment completed successfully."
+
+                echo "----- Deployment stdout -----"
+                aws ssm get-command-invocation \
+                  --region "${{ env.AWS_REGION }}" \
+                  --command-id "${COMMAND_ID}" \
+                  --instance-id "i-0d9e52818e2f4d9a3" \
+                  --query "StandardOutputContent" \
+                  --output text
+
+                echo "----- Deployment stderr -----"
+                aws ssm get-command-invocation \
+                  --region "${{ env.AWS_REGION }}" \
+                  --command-id "${COMMAND_ID}" \
+                  --instance-id "i-0d9e52818e2f4d9a3" \
+                  --query "StandardErrorContent" \
+                  --output text
+
+                exit 0
+                ;;
+
+              Failed|TimedOut|Cancelled|Cancelling)
+                echo "Deployment failed with status: ${STATUS}"
+
+                echo "----- Deployment stdout -----"
+                aws ssm get-command-invocation \
+                  --region "${{ env.AWS_REGION }}" \
+                  --command-id "${COMMAND_ID}" \
+                  --instance-id "i-0d9e52818e2f4d9a3" \
+                  --query "StandardOutputContent" \
+                  --output text || true
+
+                echo "----- Deployment stderr -----"
+                aws ssm get-command-invocation \
+                  --region "${{ env.AWS_REGION }}" \
+                  --command-id "${COMMAND_ID}" \
+                  --instance-id "i-0d9e52818e2f4d9a3" \
+                  --query "StandardErrorContent" \
+                  --output text || true
+
+                exit 1
+                ;;
+
+              Pending|InProgress|Delayed)
+                sleep 5
+                ;;
+
+              *)
+                echo "Unknown SSM status: ${STATUS}"
+                sleep 5
+                ;;
+            esac
+          done
+
+          echo "Deployment did not complete within the expected time."
+          exit 1
