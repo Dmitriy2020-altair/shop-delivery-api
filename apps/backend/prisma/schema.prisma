@@ -42,7 +42,7 @@ model products {
 model refresh_tokens {
   id         Int       @id @default(autoincrement())
   user_id    Int
-  token_hash String
+  token_hash String    @unique
   family_id  String    @db.Uuid
   expires_at DateTime  @db.Timestamp(6)
   revoked_at DateTime? @db.Timestamp(6)

@@ -1,5 +1,6 @@
 import prisma from '../db/prisma.js';
 import type { RefreshToken } from '../types/auth.js';
+import type { PrismaTransaction } from '../types/db.js';
 import type { refresh_tokens } from '../generated/prisma/client.js';
 
 function mapRefreshToken(row: refresh_tokens): RefreshToken {
@@ -16,12 +17,13 @@ function mapRefreshToken(row: refresh_tokens): RefreshToken {
 
 class RefreshTokenRepository {
   async create(
+    tx: PrismaTransaction,
     userId: number,
     tokenHash: string,
     familyId: string,
     expiresAt: Date,
   ): Promise<RefreshToken> {
-    const row = await prisma.refresh_tokens.create({
+    const row = await tx.refresh_tokens.create({
       data: {
         user_id: userId,
         token_hash: tokenHash,
@@ -41,8 +43,9 @@ class RefreshTokenRepository {
     return row ? mapRefreshToken(row) : null;
   }
 
-  async revoke(id: number): Promise<void> {
-    await prisma.refresh_tokens.updateMany({
+  /** Returns the number of rows revoked: 0 means the token was already revoked. */
+  async revoke(tx: PrismaTransaction, id: number): Promise<number> {
+    const { count } = await tx.refresh_tokens.updateMany({
       where: {
         id,
         revoked_at: null,
@@ -51,6 +54,8 @@ class RefreshTokenRepository {
         revoked_at: new Date(),
       },
     });
+
+    return count;
   }
 
   async revokeFamily(familyId: string): Promise<void> {
