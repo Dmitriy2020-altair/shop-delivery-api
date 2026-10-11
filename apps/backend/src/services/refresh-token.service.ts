@@ -1,8 +1,10 @@
 import crypto from 'node:crypto';
 
+import prisma from '../db/prisma.js';
 import refreshTokenRepository from '../repositories/refresh-tokens.repository.js';
 import { generateAccessToken } from '../utils/jwt.js';
 import { AppError } from '../errors/AppError.js';
+import type { PrismaTransaction } from '../types/db.js';
 
 class RefreshTokenService {
   private generateRefreshToken(): string {
@@ -17,12 +19,16 @@ class RefreshTokenService {
     return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   }
 
-  private async createToken(userId: number, familyId: string): Promise<string> {
+  private async createToken(
+    tx: PrismaTransaction,
+    userId: number,
+    familyId: string,
+  ): Promise<string> {
     const refreshToken = this.generateRefreshToken();
     const tokenHash = this.hashRefreshToken(refreshToken);
     const expiresAt = this.getRefreshTokenExpiresAt();
 
-    await refreshTokenRepository.create(userId, tokenHash, familyId, expiresAt);
+    await refreshTokenRepository.create(tx, userId, tokenHash, familyId, expiresAt);
 
     return refreshToken;
   }
@@ -30,7 +36,7 @@ class RefreshTokenService {
   async create(userId: number): Promise<string> {
     const familyId = crypto.randomUUID();
 
-    return this.createToken(userId, familyId);
+    return this.createToken(prisma, userId, familyId);
   }
 
   async rotate(refreshToken: string) {
@@ -52,9 +58,17 @@ class RefreshTokenService {
       throw new AppError('Refresh token expired', 401);
     }
 
-    await refreshTokenRepository.revoke(storedToken.id);
+    const newRefreshToken = await prisma.$transaction(async (tx) => {
+      const revokedCount = await refreshTokenRepository.revoke(tx, storedToken.id);
 
-    const newRefreshToken = await this.createToken(storedToken.userId, storedToken.familyId);
+      // A concurrent request rotated this token first. Only one rotation may win;
+      // the family is left alone so the winner's token stays valid.
+      if (revokedCount === 0) {
+        throw new AppError('Invalid refresh token', 401);
+      }
+
+      return this.createToken(tx, storedToken.userId, storedToken.familyId);
+    });
 
     const newAccessToken = generateAccessToken(storedToken.userId);
 
@@ -73,7 +87,7 @@ class RefreshTokenService {
       return;
     }
 
-    await refreshTokenRepository.revoke(storedToken.id);
+    await refreshTokenRepository.revoke(prisma, storedToken.id);
   }
 }
 
